@@ -117,7 +117,7 @@ exec_soma:
 	
 	j print_result
 
-soma:
+soma: #soma dois valores
 	add $v0, $a0, $a1
 	
 	jr $ra
@@ -127,12 +127,34 @@ exec_subtr:
 
 	j print_result
 
-subtr:
+subtr: #subtrai 2 valores
 	sub $v0, $a0, $a1
 
 	jr $ra
 	
-#TODO - outras opções
+exec_multi:
+	jal multi
+
+	j print_result
+
+multi: #multiplica 2 valores de 16bits
+	mult $a0, $a1
+	mflo $v0
+
+	jr $ra
+
+
+exec_divi:
+	jal divi
+
+	j print_result
+
+divi: #divide 2 valores de 16bits
+	div $a0, $a1
+	mflo $v0
+
+	jr $ra
+
 
 print_result:
 	#impressão do resultado de uma função
