@@ -34,7 +34,7 @@ Programa para simular uma calculadora com as seguintes operações:
 
     op_3:	multiplica
 
-    op_4: divide
+    op_4:   divide
 
     op_5:	potencia
 
@@ -42,6 +42,6 @@ Programa para simular uma calculadora com as seguintes operações:
 
     op_7:	raiz_q
 
-    op_9: tabuada
+    op_9:   tabuada
 
     op_0:	quit
