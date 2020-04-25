@@ -2,7 +2,10 @@
 Calculadora em assembly para mips
 
 Programa para simular uma calculadora com as seguintes operações:
+
 |op    |    Descricao                  |                   Retorno|
+|------|-------------------------------|--------------------------|
+
 
 |soma: 	|	Soma de dois inteiros	 			 |                 $v0 = $a0 + $a1|
 
