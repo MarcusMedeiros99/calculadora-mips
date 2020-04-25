@@ -108,6 +108,9 @@ exec_op:#preparação para chamada das funções do menu
 	
 	addi $t8, $zero, 1
 	beq  $t8, $t9, exec_soma
+
+	addi $t8, $zero, 2
+	beq  $t8, $t9, exec_subtr
 	
 exec_soma:
 	jal soma
@@ -120,9 +123,14 @@ soma:
 	jr $ra
 	
 exec_subtr:
-	#TODO
+	jal subtr
+
+	j print_result
+
 subtr:
-	#TODO
+	sub $v0, $a0, $a1
+
+	jr $ra
 	
 #TODO - outras opções
 
