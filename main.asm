@@ -29,6 +29,7 @@ op_6:	.asciiz " 6 - calc_imc\n"
 op_7:	.asciiz " 7 - raiz_q\n"
 op_8:	.asciiz " 8 - tabuada\n"
 op_9:	.asciiz	" 9 - fatorial\n"
+op_10:	.asciiz "10 - fibonacci\n"
 op_0:	.asciiz " 0 - quit\n"
 	
 error:	.asciiz "Opcao invalida\n"
@@ -82,7 +83,7 @@ ler_op:
 	
 	bltz $t9, invalid_op #op negativa
 	
-	addi $t8, $zero, 9
+	addi $t8, $zero, 10
 	ble $t8, $t9, invalid_op   #op maior que 9
 	
 ler_arg:#leitura do primeiro argumento
