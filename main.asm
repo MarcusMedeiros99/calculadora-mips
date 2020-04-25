@@ -34,6 +34,8 @@ op_0:	.asciiz " 0 - quit\n"
 	
 error:	.asciiz "Opcao invalida\n"
 
+newline:	.asciiz "\n"
+
 	.text
 	.globl main
 
@@ -107,7 +109,13 @@ exec_op:#preparação para chamada das funções do menu
 	add $a0, $t0, $zero
 	
 	addi $t8, $zero, 1
-	beq  $t8, $t9, exec_soma
+	beq  $t8, $t9, exec_soma # se operação for 1, soma
+	
+	addi $t8, $zero, 7
+	beq  $t8, $t9, exec_raiz # se operação for 7, raiz
+	
+	addi $t8, $zero, 8
+	beq  $t8, $t9, exec_tabuada # se operação for 8, tabuada
 	
 exec_soma:
 	jal soma
@@ -118,7 +126,93 @@ soma:
 	add $v0, $a0, $a1
 	
 	jr $ra
+
+#------------------------------------------------------------------------------------------
+# RAIZ
+# v0 = raiz(a0)
+#
+# Retorna a raiz quadrada do inteiro positivo em $a0
+#
+# Argumento:
+#	$a0 - Inteiro positivo para tirar a raiz quadrada.
+#
+# Resultado:
+#	$v0 - O piso da raiz quadrada calculada, como um inteiro.
+#
+# Registradores locais:
+#	$v0: Número x sendo testado para ver se é a raiz quadrada de n.
+#	$t0: Raiz de x.
+#------------------------------------------------------------------------------------------
+exec_raiz:
+	jal raiz
+	j print_result
+
+raiz:	
+	li	$v0, 0			# x = 0
+
+raiz_loop:	
+	mul	$t0, $v0, $v0		# t0 = x*x
+	bgt	$t0, $a0, raiz_end	# if (x*x > n) vai para raiz_end
+	addi	$v0, $v0, 1		# x = x + 1
+	j	raiz_loop		# vai para raiz_loop
 	
+raiz_end:
+	addi	$v0, $v0, -1		# x = x - 1
+	jr	$ra
+
+#------------------------------------------------------------------------------------------
+# TABUADA
+#
+# Printa a tabuada do inteiro $a0
+#
+# Argumento:
+#	$a0 - Inteiro positivo.
+#
+# Resultado:
+#	Nenhum.
+#
+# Registradores locais:
+#	$t0: Número (x) para imprimir a tabuada.
+#	$t1: Contador (i) até 10.
+#	$t2: Auxiliar com o valor de 10.
+#	
+#	$a0: n = i * x.
+#------------------------------------------------------------------------------------------
+exec_tabuada:
+	jal tabuada
+	j main
+
+tabuada:
+	move	$t0, $a0	# salva x em t0
+	li	$t1, 1		# i = 1
+	li 	$t2, 10		# maxValue = 10
+	
+	# imprime uma nova linha
+	la	$a0, newline
+	li	$v0, 4
+	syscall
+
+tabuada_loop:
+	
+	bgt	$t1, $t2, tabuada_end	# se contador for maior que 10, vai para end
+	
+	mul	$a0, $t0, $t1	# n = i * x
+	addi	$t1, $t1, 1 	# i = i + 1
+	
+	li	$v0, 1		# imprime n
+	syscall
+	
+	# imprime uma nova linha
+	la	$a0, newline
+	li	$v0, 4
+	syscall
+	
+	j	tabuada_loop	# vai para tabuada_loop
+	
+tabuada_end:
+	jr	$ra
+
+
 exec_subtr:
 	#TODO
 subtr:
