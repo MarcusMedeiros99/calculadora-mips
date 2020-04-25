@@ -131,7 +131,8 @@ print_result:
 	add $a0, $v0, $zero
 	addi $v0, $zero, 1
 	syscall
-
+	
+	j main
 invalid_op:
 	#tratamento de opções inválidas
 	la $a0, error
