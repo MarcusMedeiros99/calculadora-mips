@@ -120,6 +120,9 @@ exec_op:#preparação para chamada das funções do menu
 	
 	addi $t8, $zero, 1
 	beq  $t8, $t9, exec_soma # se operação for 1, soma
+ 	
+ 	addi $t8, $zero, 6
+ 	beq $t8, $t9, exec_calc_imc
 	
 	addi $t8, $zero, 7
 	beq  $t8, $t9, exec_raiz # se operação for 7, raiz
@@ -160,8 +163,18 @@ fat_loop:
 end_fat:
 	jr $ra
 	
-exec_fibonacci:
-
+exec_calc_imc:
+	jal calc_imc
+	
+	j print_float
+calc_imc:
+	mtc1 $a0, $f1
+	cvt.s.w $f1,$f1
+	
+	mul.s $f0, $f0, $f0
+	div.s $f0, $f1, $f0
+	
+	jr $ra
 
 #------------------------------------------------------------------------------------------
 # RAIZ
@@ -255,6 +268,13 @@ subtr:
 	#TODO
 	
 #TODO - outras opções
+
+print_float:
+	add.s $f12, $f30, $f0
+	addi $v0, $zero, 2
+	syscall
+	
+	j print_continue
 
 print_result:
 	#impressão do resultado de uma função
