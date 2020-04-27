@@ -119,6 +119,9 @@ exec_op:#preparação para chamada das funções do menu
 	addi $t8, $zero, 7
 	beq  $t8, $t9, exec_raiz # se operação for 7, raiz
 	
+	addi $t8, $zero, 9
+	beq $t8, $t9, exec_fatorial
+	
 	addi $t8, $zero, 8
 	beq  $t8, $t9, exec_tabuada # se operação for 8, tabuada
 	
@@ -131,8 +134,26 @@ soma:
 	add $v0, $a0, $a1
 	
 	jr $ra
+exec_fatorial:
+	jal fatorial
 
+	j print_result
 
+fatorial:
+	add $t0, $zero, $a0 	
+	
+	addi $v0, $zero, 1
+fat_loop:
+	beq $t0, $zero, end_fat
+	
+	mult $v0, $t0
+	mflo $v0
+	
+	addi $t0, $t0, -1
+	
+	j fat_loop
+end_fat:
+	jr $ra
 #------------------------------------------------------------------------------------------
 # RAIZ
 # v0 = raiz(a0)
