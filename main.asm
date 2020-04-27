@@ -19,6 +19,8 @@
 	.data
 	.align 0
 	
+continue: .asciiz "\nPressione <ENTER> para continuar\n"
+	
 title:	.asciiz	"\nEscolha a opção\n"
 op_1:	.asciiz " 1 - soma\n"
 op_2:	.asciiz " 2 - subtrai\n"
@@ -83,6 +85,8 @@ ler_op:
 	
 	add $t9, $v0, $zero #armazenar op
 	
+	beq $t9, $zero, quit
+	
 	bltz $t9, invalid_op #op negativa
 	
 	addi $t8, $zero, 10
@@ -102,6 +106,7 @@ ler_arg:#leitura do primeiro argumento
 ler_arg2: #leitura do segundo argumento, se necessário
 	addi $v0, $zero, 5 
 	syscall
+
 	
 exec_op:#preparação para chamada das funções do menu
 	#argumentos dos procedimentos
@@ -126,6 +131,7 @@ soma:
 	add $v0, $a0, $a1
 	
 	jr $ra
+
 
 #------------------------------------------------------------------------------------------
 # RAIZ
@@ -180,7 +186,7 @@ raiz_end:
 #------------------------------------------------------------------------------------------
 exec_tabuada:
 	jal tabuada
-	j main
+	j print_continue
 
 tabuada:
 	move	$t0, $a0	# salva x em t0
@@ -224,6 +230,14 @@ print_result:
 	#impressão do resultado de uma função
 	add $a0, $v0, $zero
 	addi $v0, $zero, 1
+	syscall
+
+print_continue:
+	la $a0, continue
+	addi $v0, $zero, 4
+	syscall
+	
+	addi $v0, $zero, 12
 	syscall
 	
 	j main
