@@ -104,9 +104,14 @@ ler_arg:#leitura do primeiro argumento
 	blt $t8, $t9, exec_op  
 	
 ler_arg2: #leitura do segundo argumento, se necessário
+	beq $t9, $t8, ler_float #no calculo do imc, lemos a altura em ponto flutuante
+	
 	addi $v0, $zero, 5 
 	syscall
 
+ler_float:
+	addi $v0, $zero, 6
+	syscall
 	
 exec_op:#preparação para chamada das funções do menu
 	#argumentos dos procedimentos
@@ -154,6 +159,10 @@ fat_loop:
 	j fat_loop
 end_fat:
 	jr $ra
+	
+exec_fibonacci:
+
+
 #------------------------------------------------------------------------------------------
 # RAIZ
 # v0 = raiz(a0)
