@@ -142,13 +142,34 @@ soma:
 	add $v0, $a0, $a1
 	
 	jr $ra
+	
+#------------------------------------------------------------------------------------------
+# FATORIAL
+# $v0 = $a0!
+#
+# Retorna o fatorial de um número inteiro
+#
+# Argumento:
+#	$a0 - Inteiro positivo para calcular o fatorial.
+#
+# Resultado:
+#	$v0 - O fatorial de $a0
+#
+# Registradores locais:
+#	$t0: Variável auxiliar que é utilizada para fazer as multiplicações necessárias no fatorial
+#	
+
 exec_fatorial:
 	jal fatorial
 
 	j print_result
 
 fatorial:
+	#copiamos o argumento para $t0
+	#$t0 vai sendo decrementado a cada iteração
+	#quanto $t0 = 0, finalizamos o loop
 	add $t0, $zero, $a0 	
+	
 	
 	addi $v0, $zero, 1
 fat_loop:
@@ -163,6 +184,21 @@ fat_loop:
 end_fat:
 	jr $ra
 	
+
+#------------------------------------------------------------------------------------------
+# CÁLCULO DO IMC
+# f1 = calc_imc($a0, $f1)
+#
+# Retorna o valor IMC a partir de uma massa $a0 e altura $f1 dados
+#
+# Argumento:
+#	$a0 - Massa em kg
+#	$f0 - Altura em metros
+# Resultado:
+#	$f1 - Resultado do IMC em ponto flutuante simples
+
+#------------------------------------------------------------------------------------------
+
 exec_calc_imc:
 	jal calc_imc
 	
@@ -172,7 +208,7 @@ calc_imc:
 	cvt.s.w $f1,$f1
 	
 	mul.s $f0, $f0, $f0
-	div.s $f0, $f1, $f0
+	div.s $f1, $f1, $f0
 	
 	jr $ra
 
@@ -270,7 +306,7 @@ subtr:
 #TODO - outras opções
 
 print_float:
-	add.s $f12, $f30, $f0
+	add.s $f12, $f30, $f1
 	addi $v0, $zero, 2
 	syscall
 	
