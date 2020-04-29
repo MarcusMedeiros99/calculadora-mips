@@ -1,6 +1,6 @@
 #Autores:
 #	Marcus Vinícius Medeiros Pará
-#	Fulano
+#	Leonardo Chieppe
 #	Cicrano
 
 #Programa para simular uma calculadora com as seguintes operações:
