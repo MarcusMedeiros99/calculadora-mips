@@ -33,6 +33,7 @@ op_10:	.asciiz "10 - fibonacci\n"
 op_0:	.asciiz " 0 - quit\n"
 	
 error:	.asciiz "Opcao invalida\n"
+error2: .asciiz "Numero invalido\n"
 
 	.text
 	.globl main
@@ -133,6 +134,15 @@ subtr: #subtrai 2 valores
 	jr $ra
 	
 exec_multi:
+	addi $t8, $zero, 32768
+	ble $t8, $a0, invalid_op2   #a0 maior que 16bit+
+	addi $t8, $zero, -32769
+	bge $t8, $a0, invalid_op2   #a0 menor que 16bits-
+	addi $t8, $zero, 32768
+	ble $t8, $a1, invalid_op2   #a1 maior que 16bit+
+	addi $t8, $zero, -32769
+	bge $t8, $a1, invalid_op2   #a1 menor que 16bits-
+
 	jal multi
 
 	j print_result
@@ -145,6 +155,15 @@ multi: #multiplica 2 valores de 16bits
 
 
 exec_divi:
+	addi $t8, $zero, 32768
+	ble $t8, $a0, invalid_op2   #a0 maior que 16bit+
+	addi $t8, $zero, -32769
+	bge $t8, $a0, invalid_op2   #a0 menor que 16bits-
+	addi $t8, $zero, 32768
+	ble $t8, $a1, invalid_op2   #a1 maior que 16bit+
+	addi $t8, $zero, -32769
+	bge $t8, $a1, invalid_op2   #a1 menor que 16bits-
+
 	jal divi
 
 	j print_result
@@ -156,11 +175,37 @@ divi: #divide 2 valores de 16bits
 	jr $ra
 
 
+exec_expo:
+	add $v0, $a0
+	addi $t0, $zero, 1
+	jal expo_for
+
+	j print_result
+
+expo_for:
+	beq $a1, $zero, expo
+
+	mul $v0, $v0, $a0
+	sub $a1, $a1, $t0
+
+	j expo_for
+
+expo:
+	jr $ra
+
+
 print_result:
 	#impressão do resultado de uma função
 	add $a0, $v0, $zero
 	addi $v0, $zero, 1
 	syscall
+
+invalid_op2:
+	#tratamento de input inválidos
+	la $a0, error2
+	addi $v0, $zero, 4
+	
+	j main
 
 invalid_op:
 	#tratamento de opções inválidas
