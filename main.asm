@@ -34,8 +34,10 @@ op_9:	.asciiz	" 9 - fatorial\n"
 op_10:	.asciiz "10 - fibonacci\n"
 op_0:	.asciiz " 0 - quit\n"
 	
-error:	.asciiz "Opcao invalida\n"
-error2: .asciiz "Numero invalido\n"
+error:	.asciiz "Opcao invalida!!\n"
+error2: .asciiz "Numero invalido!!\n"
+error3: .asciiz "Raiz de numero negativo!!\n"
+error4: .asciiz "Altura ou massa negativa!!\n"
 
 newline:	.asciiz "\n"
 
@@ -76,6 +78,9 @@ main:
 	la $a0, op_9
 	syscall
 	
+	la $a0, op_10
+	syscall
+	
 	la $a0, op_0
 	syscall
 	
@@ -90,8 +95,8 @@ ler_op:
 	
 	bltz $t9, invalid_op #op negativa
 	
-	addi $t8, $zero, 10
-	ble $t8, $t9, invalid_op   #op maior que 9
+	addi $t8, $zero, 11
+	ble $t8, $t9, invalid_op   #op maior que 10
 	
 ler_arg:#leitura do primeiro argumento
 	#código para ler inteiro
@@ -109,6 +114,8 @@ ler_arg2: #leitura do segundo argumento, se necessário
 	
 	addi $v0, $zero, 5 
 	syscall
+	
+	j exec_op
 
 ler_float:
 	addi $v0, $zero, 6
@@ -120,31 +127,35 @@ exec_op:#preparação para chamada das funções do menu
 	add $a0, $t0, $zero
 	
 	addi $t8, $zero, 1
-	beq  $t8, $t9, exec_soma
-
+	beq  $t8, $t9, exec_soma # se operação for 1, soma
+	
 	addi $t8, $zero, 2
-	beq  $t8, $t9, exec_subtr
-
-	addi $t8, $zero, 3
-	beq  $t8, $t9, exec_multi
-
-	addi $t8, $zero, 4
-	beq  $t8, $t9, exec_divi
-
+	beq  $t8, $t9, exec_subtr #se operação for 2, subtração
+	
+	addi $t8, $zero,3
+	beq $t8, $t9, exec_multi #se operação for 3, multiplica
+	
+	addi $t8, $zero,4
+	beq $t8, $t9, exec_divi #se operação for 4, divide
+	
 	addi $t8, $zero, 5
-	beq  $t8, $t9, exec_expo
+	beq $t8, $t9, exec_expo #se operação for 5, potencia
  	
  	addi $t8, $zero, 6
- 	beq $t8, $t9, exec_calc_imc
+ 	beq $t8, $t9, exec_calc_imc #se operacao for 6, calc_imc
 	
 	addi $t8, $zero, 7
 	beq  $t8, $t9, exec_raiz # se operação for 7, raiz
 	
-	addi $t8, $zero, 9
-	beq $t8, $t9, exec_fatorial
-	
 	addi $t8, $zero, 8
 	beq  $t8, $t9, exec_tabuada # se operação for 8, tabuada
+	
+	addi $t8, $zero, 9
+	beq $t8, $t9, exec_fatorial # se operação for 9, fatorial
+	
+	addi $t8, $zero, 10
+	beq, $t8, $t9, exec_fibonacci
+	 
 	
 exec_soma:
 	jal soma
@@ -155,13 +166,36 @@ soma: #soma dois valores
 	add $v0, $a0, $a1
 	
 	jr $ra
+	
+#------------------------------------------------------------------------------------------
+# FATORIAL
+# $v0 = $a0!
+#
+# Retorna o fatorial de um número inteiro
+#
+# Argumento:
+#	$a0 - Inteiro positivo para calcular o fatorial.
+#
+# Resultado:
+#	$v0 - O fatorial de $a0
+#
+# Registradores locais:
+#	$t0: Variável auxiliar que é utilizada para fazer as multiplicações necessárias no fatorial
+#	
+
 exec_fatorial:
+	blt $a0, $zero, invalid_op2
+	
 	jal fatorial
 
 	j print_result
 
 fatorial:
+	#copiamos o argumento para $t0
+	#$t0 vai sendo decrementado a cada iteração
+	#quanto $t0 = 0, finalizamos o loop
 	add $t0, $zero, $a0 	
+	
 	
 	addi $v0, $zero, 1
 fat_loop:
@@ -176,7 +210,87 @@ fat_loop:
 end_fat:
 	jr $ra
 	
+#------------------------------------------------------------------------------------------
+# CÁLCULO DO FIBONACCI
+# fibonacci($a0)
+#
+# Printa os valores da sequência de fibonacci até o $a0-ésimo termo
+#
+# Argumento:
+#	$a0
+#------------------------------------------------------------------------------------------
+
+exec_fibonacci:
+	#fibonacci não é calculado para valores negativos
+	ble $a0, $zero, invalid_op2
+	
+	jal fibonacci
+	j main
+
+fibonacci:
+	#armazenamos $a0 em $t0, e vamos decrementando até chegar a 0
+	#fibonacci(1) == 1
+	#fibonacci(2) == 1
+	#fibonacci(n) == fibonacci(n-1) + fibonacci(n-2) para n > 2
+	add $t0, $a0, $zero
+	addi $t0, $t0, -1
+	
+	add $s0, $zero, $ra #guardamos o valor de $ra, para usarmos em fim_fibonacci
+	
+	addi $t8, $zero, 0
+	addi $t9, $zero, 1
+	
+	#print de fibonacci(1)
+	addi $a0, $zero 1
+	addi $v0, $zero, 1
+	syscall
+	
+	jal print_newline
+	
+	
+	addi $v0, $zero, 1
+	
+fibonacci_loop:
+	beq $t0, $zero, fim_fibonacci
+	
+	#print de fibonacci para n > 1
+	add $t1, $zero, $t9
+	add $t9, $t9, $t8
+	add $t8, $zero, $t1
+	
+	addi $v0, $zero, 1
+	add $a0, $zero, $t9
+	syscall
+	
+	jal print_newline
+	
+	addi $t0, $t0, -1
+	
+	j fibonacci_loop
+	
+fim_fibonacci:
+	add $ra, $zero, $s0
+	
+	j print_continue
+	
+#------------------------------------------------------------------------------------------
+# CÁLCULO DO IMC
+# f1 = calc_imc($a0, $f1)
+#
+# Retorna o valor IMC a partir de uma massa $a0 e altura $f1 dados
+#
+# Argumento:
+#	$a0 - Massa em kg
+#	$f0 - Altura em metros
+# Resultado:
+#	$f1 - Resultado do IMC em ponto flutuante simples
+
+#------------------------------------------------------------------------------------------
+
 exec_calc_imc:
+	blt $a0,$zero, invalid_op4
+	blt $a1,$zero, invalid_op4
+	
 	jal calc_imc
 	
 	j print_float
@@ -185,7 +299,7 @@ calc_imc:
 	cvt.s.w $f1,$f1
 	
 	mul.s $f0, $f0, $f0
-	div.s $f0, $f1, $f0
+	div.s $f1, $f1, $f0
 	
 	jr $ra
 
@@ -206,6 +320,8 @@ calc_imc:
 #	$t0: Raiz de x.
 #------------------------------------------------------------------------------------------
 exec_raiz:
+	blt $a0,$zero, invalid_op3
+
 	jal raiz
 	j print_result
 
@@ -328,17 +444,18 @@ divi: #divide 2 valores de 16bits
 
 
 exec_expo:
-	add $v0, $a0
-	addi $t0, $zero, 1
+	add $v0, $a0, $zero
+	addi $v0, $zero, 1
+	addi $s0, $zero, 1
 	jal expo_for
 
 	j print_result
 
 expo_for:
-	beq $a1, $zero, expo
+	ble $a1, $zero, expo
 
 	mul $v0, $v0, $a0
-	sub $a1, $a1, $t0
+	sub $a1, $a1, $s0
 
 	j expo_for
 
@@ -347,7 +464,7 @@ expo:
 
 
 print_float:
-	add.s $f12, $f30, $f0
+	add.s $f12, $f30, $f1
 	addi $v0, $zero, 2
 	syscall
 	
@@ -359,13 +476,6 @@ print_result:
 	addi $v0, $zero, 1
 	syscall
 
-invalid_op2:
-	#tratamento de input inválidos
-	la $a0, error2
-	addi $v0, $zero, 4
-	
-	j main
-
 print_continue:
 	la $a0, continue
 	addi $v0, $zero, 4
@@ -375,15 +485,45 @@ print_continue:
 	syscall
 	
 	j main
-	
+
 invalid_op:
 	#tratamento de opções inválidas
 	la $a0, error
 	addi $v0, $zero, 4
+	syscall
 	
-	j main
+	j print_continue
+	
+invalid_op2:
+	#tratamento de input inválidos
+	la $a0, error2
+	addi $v0, $zero, 4
+	syscall
+	
+	j print_continue
 
+invalid_op3:
+	#tratamento de raiz negativa
+	la $a0, error3
+	addi $v0, $zero, 4
+	syscall
 	
+	j print_continue
+	
+invalid_op4:
+	#tratamento de altura ou massa negativa
+	la $a0, error4
+	addi $v0, $zero, 4
+	syscall
+	
+	j print_continue
+	
+print_newline:
+	la $a0, newline
+	addi $v0, $zero, 4
+	syscall
+	
+	jr $ra
 
 quit:
 	#fim do programa
