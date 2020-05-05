@@ -447,6 +447,7 @@ exec_expo:
 	add $v0, $a0, $zero
 	addi $v0, $zero, 1
 	addi $s0, $zero, 1
+	bge $a1, $zero, invalid_op2   #a1 menor que zero
 	jal expo_for
 
 	j print_result
