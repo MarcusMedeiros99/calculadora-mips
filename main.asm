@@ -1,7 +1,7 @@
 #Autores:
-#	Marcus Vinícius Medeiros Pará
-#	Leonardo Chieppe
-#	Cicrano
+#	Marcus Vinícius Medeiros Pará - 11031663
+#	Leonardo Chieppe - 9368730
+#	André Niero Setti - 10883901
 
 #Programa para simular uma calculadora com as seguintes operações:
 #	soma: 		Soma de dois inteiros	 			# $v0 = $a0 + $a1
